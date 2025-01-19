@@ -1,6 +1,8 @@
 import struct
 
 def to_unsigned(byte_integer: int) -> int: # Converts a signed integer in a single byte to an unsigned integer.
+    # assert byte_integer >= 0 and byte_integer <= 255
+    assert byte_integer >= -128 and byte_integer <= 127
     if byte_integer < 0:
         byte_integer += 256
     return byte_integer
@@ -47,3 +49,18 @@ class ParsedHeader:
         fields = FIELDS
         parsed_fields = {field: getattr(self, field) for field in fields}
         return f"<ParsedHeader {parsed_fields}, Remaining: {len(self.remaining_data)} bytes>"
+
+    def serialize(self):
+        fields = FIELDS # These are the fields of this object.
+        out = b"" # Initialize empty bytes output
+        for i, format_string in enumerate(self.format):
+            # The corresponding field is fields[i]
+            field_name = fields[i]
+            field_val = getattr(self, field_name) # Get the actual value of the field from this object.
+            field_length = field_val[0]
+            field_integer = field_val[1]
+            # Now try to unpack the integer into the format.
+            # field_bytes = struct.pack(format_string, field_val)
+            field_bytes = field_integer.to_bytes(field_length, byteorder='little') # num.to_bytes(4, byteorder='little')
+            out += field_bytes # Add the actual value to the output
+        return out # Return the output bytes
