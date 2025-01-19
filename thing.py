@@ -86,7 +86,7 @@ def c_header_to_python(header):
 
     # Regular expression to match C-style fields
     field_regex = re.compile(r"(\w+)\s+(\w+);")
-    struct_format = ""
+    struct_format = [] # ""
     fields = []
 
     # Process the header line by line
@@ -95,7 +95,8 @@ def c_header_to_python(header):
         if match:
             c_type, field_name = match.groups()
             if c_type in type_mapping:
-                struct_format += type_mapping[c_type]
+                # struct_format += type_mapping[c_type]
+                struct_format.append(type_mapping[c_type])
                 fields.append(field_name)
             else:
                 raise ValueError(f"Unknown type: {c_type}")
@@ -121,7 +122,7 @@ class EMFHeader:
 """
     '''
 
-    python_code = gen_python_code(struct_format, str(fields))
+    python_code = gen_python_code(str(struct_format), str(fields))
     return python_code
 
 '''
